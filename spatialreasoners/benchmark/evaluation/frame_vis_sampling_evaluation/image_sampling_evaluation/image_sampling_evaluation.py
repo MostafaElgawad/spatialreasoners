@@ -68,7 +68,7 @@ class ImageSamplingEvaluation(FrameVisSamplingEvaluation[T]):
             assert "t" in unstructured, "t should always be in inference batch"
             image = hcat(image, (1 - unstructured["t"]).expand_as(image))
 
-        if "sigma" in unstructured:
+        if unstructured.get("sigma") is not None:
             sigma = unstructured["sigma"].squeeze(1)
             mask = sigma == 0  # mask out regions with no uncertainty
 
@@ -82,13 +82,13 @@ class ImageSamplingEvaluation(FrameVisSamplingEvaluation[T]):
             sigma_color.masked_fill_(mask.unsqueeze(1), 1)
             image = hcat(image.expand(-1, 3, -1, -1), sigma_color)
 
-        if "x_pred" in unstructured:
+        if unstructured.get("x_pred") is not None:
             x = (unstructured["x_pred"] + 1) / 2
             if x.size(1) == 4:
                 x = x[:, :3] * x[:, 3:]
             image = hcat(image, x.expand(-1, image.shape[1], -1, -1))
 
-        if any(k in unstructured for k in ("t", "sigma", "x_pred")):
+        if any(unstructured.get(k) is not None for k in ("t", "sigma", "x_pred")):
             image = add_border(image)
 
         return prep_images(image, channel_last=False)
