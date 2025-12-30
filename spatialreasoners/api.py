@@ -797,7 +797,7 @@ Config files: {config_path}/{config_name}.yaml
                 overrides=parsed_args.overrides,
                 return_hydra_cfg=False  # Return typed config
             )
-            
+            set_cfg(cfg)
             print("✅ Configuration loaded successfully!")
             print("=" * 50)
             
