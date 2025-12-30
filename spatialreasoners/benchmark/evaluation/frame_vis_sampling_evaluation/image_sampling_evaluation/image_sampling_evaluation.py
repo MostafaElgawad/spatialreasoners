@@ -65,7 +65,7 @@ class ImageSamplingEvaluation(FrameVisSamplingEvaluation[T]):
             image = image[:, :3] * image[:, 3:]
 
         if self.cfg.visualize_time:
-            assert "t" in unstructured, "t should always be in inference batch"
+            assert unstructured.get("t") is not None, "t should always be in inference batch"
             image = hcat(image, (1 - unstructured["t"]).expand_as(image))
 
         if unstructured.get("sigma") is not None:
